@@ -1,57 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:imag/DataTypes/product.dart';
+import 'package:imag/components/product_viewedit_dialog.dart';
+import 'package:imag/db_manipulation.dart';
 
 class ProductList extends StatefulWidget {
-  final List<Product> products;
-
-  const ProductList({super.key, required this.products});
+  List<Product> products;
+  Function fetchProduct;
+  ProductList({super.key, required this.products, required this.fetchProduct});
 
   @override
   State<StatefulWidget> createState() => ProductListState();
 }
 
 class ProductListState extends State<ProductList> {
-  Future<void> _dialogBuilder(BuildContext context, Product product) {
+  Future<void> _showProduct(BuildContext context, Product product) {
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(product.productName),
-            content: const Text(
-              'A dialog is a type of modal window that\n'
-              'appears in front of app content to\n'
-              'provide critical information, or prompt\n'
-              'for a decision to be made.',
-            ),
-            actions: <Widget>[
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('Save'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+          return ProductVieweditDialog(
+            product: product,
+            update: widget.fetchProduct,
           );
         });
   }
 
-  void deleteProductAction(Product product) {
-    setState(() {
-      widget.products.remove(product);
-    });
+  void deleteProductAction(Product product) async {
+    await DbManipulation.deleteProduct(product.id, context);
+    widget.fetchProduct();
   }
 
   @override
@@ -85,7 +60,7 @@ class ProductListState extends State<ProductList> {
         return Padding(
           padding: const EdgeInsets.all(5),
           child: InkWell(
-            onTap: () {},
+            onTap: () => _showProduct(context, product),
             borderRadius: BorderRadius.circular(12),
             child: Card(
               child: ListTile(
@@ -108,7 +83,7 @@ class ProductListState extends State<ProductList> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed: () => _dialogBuilder(context, product),
+                      onPressed: () => _showProduct(context, product),
                       icon: const Icon(Icons.remove_red_eye_outlined),
                     ),
                     IconButton(

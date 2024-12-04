@@ -49,10 +49,6 @@ class DbManipulation {
     if (kDebugMode) {
       print("${product.productName} inserted");
     }
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Product ${product.productName} saved')),
-    );
   }
 
   static Future<List<Map<String, dynamic>>> selectProduct(
@@ -78,4 +74,45 @@ class DbManipulation {
       whereArgs: whereArgs.isEmpty ? null : whereArgs,
     );
   }
+
+  static Future<void> updateProduct(
+      Product product, BuildContext context) async {
+    try {
+      var values = product.toMap();
+      List<dynamic> whereArgs = [];
+      if (kDebugMode) print(product);
+      whereArgs.add(values.remove('id'));
+      await databaseInstance.update(tableProduct, values,
+          where: "id = ?", whereArgs: whereArgs);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Item ${product.productName} saved')),
+      );
+    } catch (e) {
+      if (kDebugMode) print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error while saving !'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  static Future<void> deleteProduct(int id, BuildContext context) async {
+    try {
+      await databaseInstance
+          .delete(tableProduct, where: "id = ?", whereArgs: <dynamic>[id]);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Item deleted')),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error while deleting !')),
+      );
+    }
+  }
+
+  static Future<void> deleteProducts(
+      List<Product> product, BuildContext context) async {}
 }

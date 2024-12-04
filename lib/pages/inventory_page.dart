@@ -61,10 +61,10 @@ class InventoryPageSate extends State<InventoryPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    FetchInventory();
+    fetchInventory();
   }
 
-  Future<void> FetchInventory() async {
+  Future<void> fetchInventory() async {
     var productsMap = await DbManipulation.selectProduct();
     setState(() {
       _products = productsMap.map((p) {
@@ -98,6 +98,13 @@ class InventoryPageSate extends State<InventoryPage> {
               child: const Text('Filters'),
             ),
             const SizedBox(width: 16),
+            ElevatedButton(
+              onPressed: () => fetchInventory(),
+              child: const Text('Refresh'),
+            ),
+            const SizedBox(
+              width: 16,
+            ),
             PopupMenuButton<String>(
               // Replace with Text('Export') if desired
               tooltip: 'Export Options',
@@ -137,6 +144,7 @@ class InventoryPageSate extends State<InventoryPage> {
                   flex: 5,
                   child: ProductList(
                     products: _currentPageItems,
+                    fetchProduct: () => fetchInventory(),
                   )),
               const SizedBox(height: 20),
               Row(
