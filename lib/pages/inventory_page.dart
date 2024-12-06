@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
@@ -59,7 +58,6 @@ class InventoryPageSate extends State<InventoryPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchInventory();
   }

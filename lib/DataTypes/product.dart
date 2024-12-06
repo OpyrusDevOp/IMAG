@@ -16,7 +16,7 @@ class Product {
       map['productName'],
       map['price'] as int,
       productImage: map['productImage'] != null
-          ? join(dbAssetsPath.path, "Images", map['productImage']!)
+          ? join(dbAssetsPath, "Images", map['productImage']!)
           : null,
       quantity: map['quantity'] ?? 0, // Default to 0 if null
     );

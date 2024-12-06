@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
+import 'package:imag/DataTypes/user.dart';
 import 'global_references.dart';
 import 'dart:io';
 
@@ -9,19 +13,24 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 const String tableProduct = "products";
+const String tableUser = "users";
+const String fileName = 'data.db';
 
 class DbManipulation {
+  static Future<void> setupPreparation({String? path}) async {
+    databaseFactory = databaseFactoryFfi;
+
+    dbAssetsPath = path ?? (await getApplicationSupportDirectory()).path;
+    imageAssetsPath = join(dbAssetsPath, "Images");
+  }
+
   static Future<void> setupDatabase() async {
     if (Platform.isWindows || Platform.isLinux) {
       // Initialize FFI
       sqfliteFfiInit();
     }
 
-    databaseFactory = databaseFactoryFfi;
-    dbAssetsPath = await getApplicationSupportDirectory();
-    String fileName = 'data.db';
-
-    var filePath = join(dbAssetsPath.path, fileName);
+    var filePath = join(dbAssetsPath, fileName);
     if (kDebugMode) {
       print(filePath);
     }
@@ -33,7 +42,16 @@ class DbManipulation {
                 "CREATE TABLE $tableProduct (id INTEGER PRIMARY KEY AUTOINCREMENT,productImage TEXT,productName TEXT NOT NULL,price INTEGER NOT NULL,quantity INTEGER DEFAULT 0)")
             .then((value) {
           if (kDebugMode) {
-            print("Database created");
+            print("$tableProduct table created");
+          }
+        });
+
+        await db
+            .execute(
+                "CREATE TABLE $tableUser (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT NOT NULL,password TEXT NOT NULL,role INTEGER NOT NULL)")
+            .then((value) {
+          if (kDebugMode) {
+            print("$tableUser table created");
           }
         });
       },
@@ -48,6 +66,18 @@ class DbManipulation {
     await databaseInstance.insert(tableProduct, values);
     if (kDebugMode) {
       print("${product.productName} inserted");
+    }
+  }
+
+  static void insertUser(User user) async {
+    var bytes = utf8.encode(user.password);
+    var digest = sha256.convert(bytes);
+    user.password = digest.toString();
+    var values = user.toMap();
+    values.remove("id");
+    await databaseInstance.insert(tableUser, values);
+    if (kDebugMode) {
+      print("${user.username} inserted");
     }
   }
 

@@ -116,13 +116,12 @@ class ProductCreationDialogState extends State<ProductCreationDialog> {
                 var image = File(imagePath!);
                 productImageName =
                     "${productName.replaceAll(" ", "_")}_${Guid.generate()}.png";
-                var newPath = join(dbAssetsPath.path, "Images");
 
-                if (!Directory(newPath).existsSync()) {
-                  await Directory(newPath).create();
+                if (!Directory(imageAssetsPath).existsSync()) {
+                  await Directory(imageAssetsPath).create();
                 }
 
-                newPath = join(newPath, productImageName);
+                var newPath = join(imageAssetsPath, productImageName);
 
                 await image.copy(newPath);
               }

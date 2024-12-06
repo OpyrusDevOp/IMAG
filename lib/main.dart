@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:imag/config_app_page.dart';
+import 'package:imag/global_references.dart';
 import 'package:imag/home_page.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -11,8 +13,13 @@ void main() async {
     sqfliteFfiInit();
   }
 
-  databaseFactory = databaseFactoryFfi;
-  await DbManipulation.setupDatabase();
+  await DbManipulation.setupPreparation();
+  var exist = await checkConfig();
+
+  if (exist) {
+    await loadConfig();
+    if (configLoaded) await DbManipulation.setupDatabase();
+  }
   runApp(const MyApp());
 }
 
@@ -24,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'IMAG',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -44,7 +51,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: configLoaded ? HomePage() : const ConfigAppPage(),
     );
   }
 }

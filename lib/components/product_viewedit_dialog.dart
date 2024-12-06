@@ -197,7 +197,7 @@ class _ProductVieweditDialogState extends State<ProductVieweditDialog> {
         var image = File(imagePath!);
         productImageName =
             "${productName.replaceAll(" ", "_")}_${Guid.generate()}.png";
-        var newPath = join(dbAssetsPath.path, "Images");
+        var newPath = join(dbAssetsPath, "Images");
 
         if (!Directory(newPath).existsSync()) {
           await Directory(newPath).create();
