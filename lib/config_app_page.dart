@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/user.dart';
 import 'package:imag/db_manipulation.dart';
@@ -32,46 +33,47 @@ class ConfigAppPageState extends State<ConfigAppPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Padding(
-            padding: const EdgeInsets.all(50),
-            child: !isSaving
-                ? Column(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: pages[_currentPage]),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (_currentPage > 0)
-                            ElevatedButton(
-                              onPressed: _previousPage,
-                              child: const Text('Previous'),
-                            ),
-                          const SizedBox(width: 16),
-                          _currentPage < _maxPages - 1
-                              ? ElevatedButton(
-                                  onPressed: _nextPage,
-                                  child: const Text('Next'),
-                                )
-                              : ElevatedButton(
-                                  onPressed: _saveConfig,
-                                  child: Text("Save"),
-                                ),
-                        ],
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: Column(
+          padding: const EdgeInsets.all(50),
+          child: !isSaving
+              ? Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: pages[_currentPage]),
+                    ),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(),
-                        Text(loadingMessage)
+                        if (_currentPage > 0)
+                          ElevatedButton(
+                            onPressed: _previousPage,
+                            child: const Text('Previous'),
+                          ),
+                        const SizedBox(width: 16),
+                        _currentPage < _maxPages - 1
+                            ? ElevatedButton(
+                                onPressed: _nextPage,
+                                child: const Text('Next'),
+                              )
+                            : ElevatedButton(
+                                onPressed: _saveConfig,
+                                child: Text("Save"),
+                              ),
                       ],
                     ),
-                  )),
+                  ],
+                )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      Text(loadingMessage)
+                    ],
+                  ),
+                ),
+        ),
       );
 
   @override
@@ -137,31 +139,43 @@ class ConfigAppPageState extends State<ConfigAppPage> {
 
       dbAssetsPath = databasePath;
     }
-    setState(() {
-      loadingMessage = "Saving Config";
-    });
-    await Future.delayed(Duration(seconds: 1));
-    await saveConfig();
-    await DbManipulation.setupDatabase();
+    try {
+      setState(() {
+        loadingMessage = "Saving Config";
+      });
 
-    setState(() {
-      loadingMessage = "Save root user ..";
-    });
-    await Future.delayed(Duration(seconds: 2));
-    DbManipulation.insertUser(User(
-        username: usernameInputControl.text,
-        password: passworInputControl.text,
-        role: UserRole.admin));
-    setState(() {
-      loadingMessage = "Setup Finished !";
-    });
-    await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      isSaving = false;
-    });
-    if (context.mounted) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+      await Future.delayed(Duration(seconds: 1));
+      await saveConfig();
+      await DbManipulation.setupDatabase();
+
+      setState(() {
+        loadingMessage = "Save root user ..";
+      });
+      await Future.delayed(Duration(seconds: 2));
+      DbManipulation.insertUser(User(
+          username: usernameInputControl.text,
+          password: passworInputControl.text,
+          role: UserRole.admin));
+      setState(() {
+        loadingMessage = "Setup Finished !";
+      });
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        isSaving = false;
+      });
+      if (context.mounted) {
+        await Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text("Error while saving config !"),
+      ));
+
+      setState(() {
+        isSaving = false;
+      });
     }
   }
 }

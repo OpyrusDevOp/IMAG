@@ -70,6 +70,7 @@ class DbManipulation {
   }
 
   static void insertUser(User user) async {
+    if ((await isUserExists(user.username))) throw Exception();
     var bytes = utf8.encode(user.password);
     var digest = sha256.convert(bytes);
     user.password = digest.toString();
@@ -103,6 +104,42 @@ class DbManipulation {
       where: whereClause.isEmpty ? null : whereClause,
       whereArgs: whereArgs.isEmpty ? null : whereArgs,
     );
+  }
+
+  static Future<bool> isUserExists(String username) async {
+    var result = await databaseInstance
+        .query(tableUser, where: "username = ?", whereArgs: [username]);
+
+    return result.isNotEmpty;
+  }
+
+  static Future<User?> queryUser(String username) async {
+    var result = await databaseInstance
+        .query(tableUser, where: "username = ?", whereArgs: [username]);
+
+    if (result.isEmpty) return null;
+
+    return User.fromMap(result[0].cast());
+  }
+
+  static Future<List<UserDto>> queryAll() async {
+    var result = await databaseInstance.query(tableUser);
+
+    var users = result.map(UserDto.fromMap);
+
+    return users.toList();
+  }
+
+  static Future<UserDto?> connexion(String username, String password) async {
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    password = digest.toString();
+
+    var user = await queryUser(username);
+
+    if (user == null || user.password != password) return null;
+
+    return UserDto.fromUser(user);
   }
 
   static Future<void> updateProduct(

@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:imag/auth_page.dart';
 import 'package:imag/config_app_page.dart';
 import 'package:imag/global_references.dart';
-import 'package:imag/home_page.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'db_manipulation.dart';
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: configLoaded ? HomePage() : const ConfigAppPage(),
+      home: configLoaded ? AuthPage() : const ConfigAppPage(),
     );
   }
 }

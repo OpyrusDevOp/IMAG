@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:imag/pages/inventory_page.dart';
-//import 'package:flutter/widgets.dart';
+import 'package:imag/auth_page.dart';
+import 'package:imag/global_references.dart';
+import 'package:imag/sub_pages/accounts_page.dart';
+import 'package:imag/sub_pages/inventory_page.dart';
+import 'package:imag/sub_pages/shopping_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +14,12 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+
+  final List<Widget> subPages = [
+    ShoppingPage(),
+    InventoryPage(),
+    AccountsPage()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +35,18 @@ class HomePageState extends State<HomePage> {
               color: Colors.red,
               size: 30,
             ),
-            tooltip: 'Show Snackbar',
+            tooltip: 'signout',
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
+              logoutConfig();
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const AuthPage();
+                  },
+                ),
+              );
             },
           ),
         ],
@@ -56,42 +73,36 @@ class HomePageState extends State<HomePage> {
               destinations: const <NavigationRailDestination>[
                 NavigationRailDestination(
                   icon: Icon(
-                    Icons.dashboard_outlined,
-                    size: 30,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.dashboard,
-                    size: 30,
-                  ),
-                  label: Text('Inventory'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(
                     Icons.shopping_cart_outlined,
-                    size: 30,
                   ),
                   selectedIcon: Icon(
                     Icons.shopping_cart,
-                    size: 30,
                   ),
                   label: Text('Shop'),
                 ),
                 NavigationRailDestination(
                   icon: Icon(
+                    Icons.dashboard_outlined,
+                  ),
+                  selectedIcon: Icon(
+                    Icons.dashboard,
+                  ),
+                  label: Text('Inventory'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(
                     Icons.group_outlined,
-                    size: 30,
                   ),
                   selectedIcon: Icon(
                     Icons.group,
-                    size: 30,
                   ),
-                  label: Text('Third'),
+                  label: Text('Accounts'),
                 ),
               ],
             ),
             const VerticalDivider(thickness: 1, width: 1),
             // This is the main content.
-            const Expanded(
+            Expanded(
                 child: Card(
               color: Colors.white,
               margin: EdgeInsets.all(15),
@@ -99,7 +110,7 @@ class HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.all(Radius.circular(20))),
               child: Padding(
                 padding: EdgeInsets.all(20),
-                child: InventoryPage(),
+                child: subPages[_selectedIndex],
               ),
             )),
           ],
@@ -107,54 +118,4 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
-}
-
-// Mock Data Source for PaginatedDataTable
-class ProductDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> _products = List.generate(
-    5,
-    (index) => {
-      'name': 'Product $index',
-      'category': 'Category $index',
-      'sku': 'SKU$index',
-      'variant': 'Variant $index',
-      'price': '${(index + 1) * 10}',
-      'status': index % 2 == 0 ? 'Active' : 'Out of Stock',
-    },
-  );
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= _products.length) return null;
-    final product = _products[index];
-    return DataRow(cells: [
-      _buildStretchableCell(product['name']),
-      _buildStretchableCell(product['category']),
-      _buildStretchableCell(product['sku']),
-      _buildStretchableCell(product['variant']),
-      _buildStretchableCell(product['price']),
-      _buildStretchableCell(product['status']),
-    ]);
-  }
-
-  DataCell _buildStretchableCell(String text) {
-    return DataCell(
-      SizedBox(
-        width: double.infinity, // Ensures the cell stretches
-        child: Text(
-          text,
-          textAlign: TextAlign.center, // Optional: Center align the text
-        ),
-      ),
-    );
-  }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => _products.length;
-
-  @override
-  int get selectedRowCount => 0;
 }

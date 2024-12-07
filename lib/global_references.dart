@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:imag/DataTypes/user.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -8,11 +9,17 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 late String dbAssetsPath;
 late String imageAssetsPath;
 late Database databaseInstance;
-
-const String configFileName = "AppSetting.config";
 late String configFilePath;
+const String configFileName = "AppSetting.config";
+
+UserDto? currentUser;
 
 bool configLoaded = false;
+
+void logoutConfig() {
+  currentUser = null;
+}
+
 Future<bool> checkConfig() async {
   var appDir = await getApplicationSupportDirectory();
   if (kDebugMode) print("App Directory :  ${appDir.path}");
@@ -43,7 +50,7 @@ Future<void> loadConfig() async {
 
   try {
     var content = await configFile.readAsString();
-    var config = jsonDecode(content) as Map<String, String>;
+    var config = jsonDecode(content) as Map<String, dynamic>;
 
     dbAssetsPath = config['dbAssetsPath']!;
     imageAssetsPath = config['imageAssetsPath']!;
