@@ -19,8 +19,10 @@ class ProductCreationDialogState extends State<ProductCreationDialog> {
   String? imagePath;
 
   TextEditingController productNameController = TextEditingController();
-  TextEditingController productQuantityController = TextEditingController();
-  TextEditingController productPriceController = TextEditingController();
+  TextEditingController productQuantityController =
+      TextEditingController(text: '0');
+  TextEditingController productPriceController =
+      TextEditingController(text: '0');
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -77,6 +79,10 @@ class ProductCreationDialogState extends State<ProductCreationDialog> {
                 if (value == null || int.tryParse(value) == null) {
                   return 'Please enter a valid quantity';
                 }
+
+                if (int.parse(value) <= 0) {
+                  return 'Value must be greater than 0';
+                }
                 return null;
               },
               controller: productQuantityController,
@@ -89,6 +95,10 @@ class ProductCreationDialogState extends State<ProductCreationDialog> {
               validator: (value) {
                 if (value == null || int.tryParse(value) == null) {
                   return 'Please enter a valid price';
+                }
+
+                if (int.parse(value) <= 0) {
+                  return 'Value must be greater than 0';
                 }
                 return null;
               },

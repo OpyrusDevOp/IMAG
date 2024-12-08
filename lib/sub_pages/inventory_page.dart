@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
 import 'package:imag/components/product_creation_dialog.dart';
 import 'package:imag/components/product_list.dart';
+import 'package:imag/components/product_viewedit_dialog.dart';
 import 'package:imag/db_manipulation.dart';
 
 class InventoryPage extends StatefulWidget {
@@ -17,6 +17,22 @@ class InventoryPageSate extends State<InventoryPage> {
     const DropdownMenuEntry<String>(value: 'PDF', label: 'PDF', enabled: true),
     const DropdownMenuEntry(value: 'CSV', label: 'CSV', enabled: true),
   ];
+  Future<void> _showProduct(Product product) {
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return ProductVieweditDialog(
+            product: product,
+            update: fetchInventory,
+            canGoEditMode: true,
+          );
+        });
+  }
+
+  void _deleteProduct(Product product) async {
+    await DbManipulation.deleteProduct(product.id, context);
+    fetchInventory();
+  }
 
   // ignore: prefer_final_fields
   List<Product> _products = [];
@@ -66,7 +82,6 @@ class InventoryPageSate extends State<InventoryPage> {
     var productsMap = await DbManipulation.selectProduct();
     setState(() {
       _products = productsMap.map((p) {
-        if (kDebugMode) print(p);
         return Product.fromMap(p);
       }).toList();
     });
@@ -87,12 +102,7 @@ class InventoryPageSate extends State<InventoryPage> {
           ),
           actions: <Widget>[
             ElevatedButton(
-              onPressed: () async {
-                var result = await DbManipulation.selectProduct();
-                if (kDebugMode) {
-                  print(result);
-                }
-              },
+              onPressed: () async {},
               child: const Text('Filters'),
             ),
             const SizedBox(width: 16),
@@ -142,23 +152,27 @@ class InventoryPageSate extends State<InventoryPage> {
                   flex: 5,
                   child: ProductList(
                     products: _currentPageItems,
-                    fetchProduct: () => fetchInventory(),
+                    showProduct: _showProduct,
+                    deleteProduct: _deleteProduct,
                   )),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: _previousPage,
-                    child: const Text('Previous'),
-                  ),
+                  if (_currentPage > 0)
+                    ElevatedButton(
+                      onPressed: _previousPage,
+                      child: const Text('Previous'),
+                    ),
                   const SizedBox(width: 16),
                   Text(_currentPage.toString()),
                   const SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: _nextPage,
-                    child: const Text('Next'),
-                  ),
+                  if (_currentPage <
+                      (_products.length / _itemsPerPage).ceil() - 1)
+                    ElevatedButton(
+                      onPressed: _nextPage,
+                      child: const Text('Next'),
+                    ),
                 ],
               ),
             ],

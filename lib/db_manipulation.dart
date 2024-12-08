@@ -83,7 +83,7 @@ class DbManipulation {
   }
 
   static Future<List<Map<String, dynamic>>> selectProduct(
-      {int? id, String? productName}) async {
+      {int? id, String? productName, int? count}) async {
     // Base query
     String whereClause = '';
     List<dynamic> whereArgs = [];
@@ -103,6 +103,7 @@ class DbManipulation {
       tableProduct,
       where: whereClause.isEmpty ? null : whereClause,
       whereArgs: whereArgs.isEmpty ? null : whereArgs,
+      limit: count,
     );
   }
 

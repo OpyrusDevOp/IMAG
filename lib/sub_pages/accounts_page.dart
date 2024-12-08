@@ -1,4 +1,3 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/db_manipulation.dart';
 
@@ -30,46 +29,41 @@ class AccountsPageState extends State<AccountsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        floatingActionButton: FloatingActionButton(
-          elevation: 0,
-          onPressed: () {},
-          child: const Icon(Icons.add),
-        ),
-        body: DataTable2(
-          dataRowColor: WidgetStateColor.transparent,
-          headingRowColor: WidgetStateColor.transparent,
-          columns: const [
-            DataColumn2(label: Text('ID'), size: ColumnSize.S),
-            DataColumn2(label: Text('Username'), size: ColumnSize.L),
-            DataColumn2(label: Text('Role'), size: ColumnSize.M),
-            DataColumn2(
-                label: Text('Actions'), size: ColumnSize.M), // Action column
-          ],
-          rows: users
-              .map(
-                (user) => DataRow2(
-                  cells: [
-                    DataCell(Text(user.id.toString())),
-                    DataCell(Text(user.username)),
-                    DataCell(Text(user.role.name)),
-                    DataCell(
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {},
-                          ),
-                        ],
+      floatingActionButton: FloatingActionButton(
+        elevation: 0,
+        onPressed: () {},
+        child: const Icon(Icons.add),
+      ),
+      body: GridView(
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+        semanticChildCount: users.length,
+        children: users
+            .map(
+              (user) => InkWell(
+                onTap: () {},
+                child: Card(
+                  elevation: 5,
+                  color: Colors.grey,
+                  child: GridTile(
+                    footer: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(user.username,
+                            style: Theme.of(context).textTheme.titleLarge),
                       ),
                     ),
-                  ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.person_3_sharp,
+                        size: 50,
+                      ),
+                    ),
+                  ),
                 ),
-              )
-              .toList(),
-        ),
-      );
+              ),
+            )
+            .toList(),
+      ));
 }

@@ -45,6 +45,9 @@ dependencies:
   crypto: ^3.0.6
   data_table_2: ^2.5.16
   sqflite_common_ffi_web: ^0.4.5+4
+  flutter_spinbox: ^0.13.1
+  pdf: ^3.11.1
+  filesystem_picker: ^4.1.0
 
 dev_dependencies:
   flutter_test:

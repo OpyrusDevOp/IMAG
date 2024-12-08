@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:imag/DataTypes/product.dart';
 import 'package:path/path.dart';
@@ -12,9 +11,13 @@ import '../global_references.dart';
 
 class ProductVieweditDialog extends StatefulWidget {
   final Product product;
-  final Function update;
+  final Function? update;
+  final bool canGoEditMode;
   const ProductVieweditDialog(
-      {super.key, required this.product, required this.update});
+      {super.key,
+      required this.product,
+      required this.canGoEditMode,
+      this.update});
 
   @override
   State<ProductVieweditDialog> createState() => _ProductVieweditDialogState();
@@ -50,14 +53,15 @@ class _ProductVieweditDialogState extends State<ProductVieweditDialog> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(editMode ? 'Edit Product' : 'View Product'),
-          IconButton(
-            icon: Icon(editMode ? Icons.visibility : Icons.edit),
-            onPressed: () {
-              setState(() {
-                editMode = !editMode;
-              });
-            },
-          ),
+          if (widget.canGoEditMode)
+            IconButton(
+              icon: Icon(editMode ? Icons.visibility : Icons.edit),
+              onPressed: () {
+                setState(() {
+                  editMode = !editMode;
+                });
+              },
+            ),
         ],
       ),
       content: Form(
@@ -219,7 +223,7 @@ class _ProductVieweditDialogState extends State<ProductVieweditDialog> {
       // Update the product in the database
       DbManipulation.updateProduct(updatedProduct, context);
 
-      widget.update();
+      widget.update!();
     }
   }
 }

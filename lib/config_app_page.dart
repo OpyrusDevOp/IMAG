@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/user.dart';
@@ -215,6 +216,23 @@ class ConfigFormState extends State<ConfigForm> {
                     border: OutlineInputBorder(
                       borderSide: BorderSide(),
                       borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.folder_outlined),
+                      onPressed: () async {
+                        String? path = await FilesystemPicker.open(
+                          title: 'Save to folder',
+                          context: context,
+                          fsType: FilesystemType.folder,
+                          pickText: 'Save file to this folder',
+                        );
+
+                        if (path != null) {
+                          setState(() {
+                            widget.databasePathInputControl.text = path;
+                          });
+                        }
+                      },
                     ),
                     helper: Text("Must exist and be absolute !")),
                 validator: (value) {
