@@ -75,8 +75,8 @@ class _ProductVieweditDialogState extends State<ProductVieweditDialog> {
               height: 500,
               width: 500,
               child: (imagePath != null)
-                  ? Image.asset(
-                      imagePath!,
+                  ? Image.file(
+                      File(getImagePath(imagePath!)),
                       fit: BoxFit.contain,
                       height: 500,
                       width: 500,

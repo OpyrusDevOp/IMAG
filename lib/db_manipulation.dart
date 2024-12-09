@@ -60,7 +60,8 @@ class DbManipulation {
         await databaseFactory.openDatabase(filePath, options: options);
   }
 
-  static void insertProduct(Product product, BuildContext context) async {
+  static Future<void> insertProduct(
+      Product product, BuildContext context) async {
     var values = product.toMap();
     values.remove("id");
     await databaseInstance.insert(tableProduct, values);
@@ -69,7 +70,7 @@ class DbManipulation {
     }
   }
 
-  static void insertUser(User user) async {
+  static Future<void> insertUser(User user) async {
     if ((await isUserExists(user.username))) throw Exception();
     var bytes = utf8.encode(user.password);
     var digest = sha256.convert(bytes);
@@ -165,6 +166,27 @@ class DbManipulation {
     }
   }
 
+  static Future<void> updateFromSelling(List<ProductCarting> cart) async {
+    List<Product> products = cart.map(Product.fromPurchase).toList();
+    var values = products.map((p) => p.toMap()).toList();
+
+    for (var item in values) {
+      List<dynamic> whereArgs = [];
+      whereArgs.add(item.remove('id'));
+      await databaseInstance.update(tableProduct, item,
+          where: "id = ?", whereArgs: whereArgs);
+    }
+  }
+
+  static Future<void> updateUser(User user) async {
+    var userMap = user.toMap();
+
+    var id = userMap.remove('id');
+
+    await databaseInstance
+        .update(tableUser, userMap, where: "id = ?", whereArgs: [id]);
+  }
+
   static Future<void> deleteProduct(int id, BuildContext context) async {
     try {
       await databaseInstance
@@ -179,6 +201,11 @@ class DbManipulation {
         SnackBar(content: Text('Error while deleting !')),
       );
     }
+  }
+
+  static Future<void> deleteUser(int userId) async {
+    await databaseInstance
+        .delete(tableUser, where: "id = ?", whereArgs: [userId]);
   }
 
   static Future<void> deleteProducts(

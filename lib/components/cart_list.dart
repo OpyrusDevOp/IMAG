@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:imag/DataTypes/product.dart';
+import 'package:imag/global_references.dart';
 
 class CartList extends StatefulWidget {
   final List<ProductCarting> products;
@@ -53,8 +56,8 @@ class CartListState extends State<CartList> {
           child: Card(
             child: ListTile(
               leading: (product.productImage != null
-                  ? Image.asset(
-                      product.productImage!,
+                  ? Image.file(
+                      File(getImagePath(product.productImage!)),
                       fit: BoxFit.cover,
                     )
                   : Icon(

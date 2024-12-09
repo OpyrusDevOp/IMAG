@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imag/DataTypes/user.dart';
 import 'package:imag/auth_page.dart';
 import 'package:imag/global_references.dart';
 import 'package:imag/sub_pages/accounts_page.dart';
@@ -20,6 +21,12 @@ class HomePageState extends State<HomePage> {
     InventoryPage(),
     AccountsPage()
   ];
+
+  void onDestinationSelected(index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,51 +62,34 @@ class HomePageState extends State<HomePage> {
         padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
         child: Row(
           children: <Widget>[
-            NavigationRail(
-              minWidth: 100,
-              selectedIndex: _selectedIndex,
-              labelType: NavigationRailLabelType.all,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              //trailing: IconButton(
-              //  onPressed: () {
-              // Add your onPressed code here!
-              // },
-              // icon: const Icon(Icons.more_horiz_rounded),
-              //),
-              destinations: const <NavigationRailDestination>[
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.shopping_cart_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.shopping_cart,
-                  ),
-                  label: Text('Shop'),
+            if (currentUser!.role == UserRole.admin)
+              Container(
+                width: 80, // Adjust width for the sidebar
+                color: Colors.grey[200],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildDestination(
+                      index: 0,
+                      icon: Icons.shopping_cart_outlined,
+                      label: 'Shop',
+                      isSelected: _selectedIndex == 0,
+                    ),
+                    _buildDestination(
+                      index: 1,
+                      icon: Icons.dashboard_outlined,
+                      label: 'Inventory',
+                      isSelected: _selectedIndex == 1,
+                    ),
+                    _buildDestination(
+                      index: 2,
+                      icon: Icons.group_outlined,
+                      label: 'Accounts',
+                      isSelected: _selectedIndex == 2,
+                    ),
+                  ],
                 ),
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.dashboard_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.dashboard,
-                  ),
-                  label: Text('Inventory'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(
-                    Icons.group_outlined,
-                  ),
-                  selectedIcon: Icon(
-                    Icons.group,
-                  ),
-                  label: Text('Accounts'),
-                ),
-              ],
-            ),
+              ),
             const VerticalDivider(thickness: 1, width: 1),
             // This is the main content.
             Expanded(
@@ -113,6 +103,35 @@ class HomePageState extends State<HomePage> {
                 child: subPages[_selectedIndex],
               ),
             )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDestination({
+    required int index,
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+  }) {
+    return InkWell(
+      onTap: () => onDestinationSelected(index),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.blue : Colors.black,
+              size: 30,
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.blue : Colors.black,
+              ),
+            ),
           ],
         ),
       ),

@@ -20,6 +20,9 @@ void logoutConfig() {
   currentUser = null;
 }
 
+String getImagePath(String imageFileName) =>
+    join(dbAssetsPath, "Images", imageFileName);
+
 Future<bool> checkConfig() async {
   var appDir = await getApplicationSupportDirectory();
   if (kDebugMode) print("App Directory :  ${appDir.path}");

@@ -36,8 +36,8 @@ class ProductCreationDialogState extends State<ProductCreationDialog> {
           children: [
             // Image Picker (dummy button here for simplicity)
             if (imagePath != null)
-              Image.asset(
-                imagePath!,
+              Image.file(
+                File(imagePath!),
                 fit: BoxFit.contain,
                 height: 500,
                 width: 500,

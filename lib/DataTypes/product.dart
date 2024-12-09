@@ -71,10 +71,17 @@ class Product {
       map['id'] as int,
       map['productName'],
       map['price'] as int,
-      productImage: map['productImage'] != null
-          ? join(dbAssetsPath, "Images", map['productImage']!)
-          : null,
+      productImage: map['productImage'],
       quantity: map['quantity'] ?? 0, // Default to 0 if null
+    );
+  }
+  factory Product.fromPurchase(ProductCarting product) {
+    return Product(
+      product.id,
+      product.productName,
+      product.price,
+      productImage: product.productImage,
+      quantity: product.maxQuantity - product.quantity, // Default to 0 if null
     );
   }
 

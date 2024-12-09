@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
+import 'package:imag/global_references.dart';
 
 class ProductList extends StatefulWidget {
   final List<Product> products;
@@ -54,8 +57,8 @@ class ProductListState extends State<ProductList> {
                 width: 60, // Set a fixed width
                 height: 60, // Set a fixed height
                 child: (product.productImage != null
-                    ? Image.asset(
-                        product.productImage!,
+                    ? Image.file(
+                        File(getImagePath(product.productImage!)),
                         fit: BoxFit.cover,
                       )
                     : Icon(
