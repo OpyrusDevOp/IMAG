@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/db_manipulation.dart';
 
@@ -27,6 +28,21 @@ class AccountsPageState extends State<AccountsPage> {
     fetchUser();
   }
 
+  void _addUser(String username, String password, UserRole role) async {
+    await DbManipulation.insertUser(
+        User(username: username, password: password, role: role, id: 0));
+
+    fetchUser();
+  }
+
+  void _modifyUser(String username, String newPassword, String newRole) {}
+
+  void _deleteUser(String username) {
+    setState(() {
+      users.removeWhere((user) => user.username == username);
+    });
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -42,9 +58,15 @@ class AccountsPageState extends State<AccountsPage> {
             .map(
               (user) => InkWell(
                 onTap: () {},
+                onSecondaryTap: () {
+                  if (user.id < 2) return;
+                  if (kDebugMode) print("second Tap");
+                },
                 child: Card(
                   elevation: 5,
-                  color: Colors.grey,
+                  color: user.role == UserRole.admin
+                      ? Colors.yellow.shade100
+                      : Colors.lightBlue.shade100,
                   child: GridTile(
                     footer: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -56,7 +78,9 @@ class AccountsPageState extends State<AccountsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Icon(
-                        Icons.person_3_sharp,
+                        user.role == UserRole.admin
+                            ? Icons.person_3_sharp
+                            : Icons.person,
                         size: 50,
                       ),
                     ),
@@ -66,4 +90,115 @@ class AccountsPageState extends State<AccountsPage> {
             )
             .toList(),
       ));
+
+  void _showAddUserDialog() {
+    String username = '';
+    String password = '';
+    String role = 'regular';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Add User"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: "Username"),
+                onChanged: (value) => username = value,
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Password"),
+                obscureText: true,
+                onChanged: (value) => password = value,
+              ),
+              DropdownButtonFormField<String>(
+                value: role,
+                items: ['admin', 'regular']
+                    .map((role) => DropdownMenuItem(
+                          value: role,
+                          child: Text(role),
+                        ))
+                    .toList(),
+                onChanged: (value) => role = value!,
+                decoration: InputDecoration(labelText: "Role"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (username.isNotEmpty && password.isNotEmpty) {
+                  var roleValue =
+                      role == "admin" ? UserRole.admin : UserRole.regular;
+                  _addUser(username, password, roleValue);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Add"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showModifyUserDialog(User user) {
+    String newPassword = '';
+    String newRole = user.role.name;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Modify User"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: "New Password"),
+                obscureText: true,
+                onChanged: (value) => newPassword = value,
+              ),
+              DropdownButtonFormField<String>(
+                value: newRole,
+                items: ['admin', 'standard']
+                    .map((role) => DropdownMenuItem(
+                          value: role,
+                          child: Text(role),
+                        ))
+                    .toList(),
+                onChanged: (value) => newRole = value!,
+                decoration: InputDecoration(labelText: "New Role"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (newPassword.isNotEmpty || newRole.isNotEmpty) {
+                  _modifyUser(user.username, newPassword, newRole);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Modify"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

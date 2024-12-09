@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
 import 'package:imag/components/cart_list.dart';
 import 'package:imag/components/product_listing_dialog.dart';
+import 'package:imag/components/receipt_pdfview.dart';
+import 'package:imag/db_manipulation.dart';
 
 class ShoppingPage extends StatefulWidget {
   const ShoppingPage({super.key});
@@ -44,7 +46,13 @@ class ShoppingPageState extends State<ShoppingPage> {
             if (cart.isNotEmpty)
               FloatingActionButton(
                 elevation: 1,
-                onPressed: () {},
+                onPressed: () async {
+                  await generatePdfReceipt(cart);
+                  await DbManipulation.updateFromSelling(cart);
+                  setState(() {
+                    cart.clear();
+                  });
+                },
                 tooltip: "Make payment",
                 child: const Icon(Icons.description_outlined),
               ),

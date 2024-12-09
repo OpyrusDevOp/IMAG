@@ -77,6 +77,15 @@ class Product {
       quantity: map['quantity'] ?? 0, // Default to 0 if null
     );
   }
+  factory Product.fromPurchase(ProductCarting product) {
+    return Product(
+      product.id,
+      product.productName,
+      product.price,
+      productImage: product.productImage,
+      quantity: product.maxQuantity - product.quantity, // Default to 0 if null
+    );
+  }
 
   // Optional: toMap method
   Map<String, dynamic> toMap() {

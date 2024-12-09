@@ -29,6 +29,15 @@ class InventoryPageSate extends State<InventoryPage> {
         });
   }
 
+  void searchProduct({String? name}) async {
+    var searchResult =
+        await DbManipulation.selectProduct(productName: name, count: 20);
+    var productFromResult = searchResult.map(Product.fromMap).toList();
+    setState(() {
+      _products = productFromResult;
+    });
+  }
+
   void _deleteProduct(Product product) async {
     await DbManipulation.deleteProduct(product.id, context);
     fetchInventory();
@@ -93,7 +102,8 @@ class InventoryPageSate extends State<InventoryPage> {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title: const TextField(
+          title: TextField(
+            onChanged: (value) => searchProduct(name: value),
             decoration: InputDecoration(
               hintText: 'Search',
               prefixIcon: Icon(Icons.search),
@@ -101,10 +111,10 @@ class InventoryPageSate extends State<InventoryPage> {
             ),
           ),
           actions: <Widget>[
-            ElevatedButton(
-              onPressed: () async {},
-              child: const Text('Filters'),
-            ),
+            // ElevatedButton(
+            //  onPressed: () async {},
+            // child: const Text('Filters'),
+            //),
             const SizedBox(width: 16),
             ElevatedButton(
               onPressed: () => fetchInventory(),
