@@ -24,10 +24,10 @@ String getImagePath(String imageFileName) =>
     join(dbAssetsPath, "Images", imageFileName);
 
 Future<bool> checkConfig() async {
-  var appDir = await getApplicationSupportDirectory();
-  if (kDebugMode) print("App Directory :  ${appDir.path}");
+  var appDir = context.current;
+  if (kDebugMode) print("App Directory :  $appDir");
 
-  configFilePath = join(appDir.path, configFileName);
+  configFilePath = join(context.current, configFileName);
 
   return await File(configFilePath).exists();
 }

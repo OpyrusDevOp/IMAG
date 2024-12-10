@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
@@ -5,6 +7,9 @@ import 'package:imag/components/cart_list.dart';
 import 'package:imag/components/product_listing_dialog.dart';
 import 'package:imag/components/receipt_pdfview.dart';
 import 'package:imag/db_manipulation.dart';
+import 'package:path/path.dart' as Path;
+import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ShoppingPage extends StatefulWidget {
   const ShoppingPage({super.key});
@@ -47,7 +52,10 @@ class ShoppingPageState extends State<ShoppingPage> {
               FloatingActionButton(
                 elevation: 1,
                 onPressed: () async {
-                  await generatePdfReceipt(cart);
+                 
+                  var dir = await FilePicker.platform.saveFile(allowedExtensions: ['pdf'], fileName: 'receipt.pdf');
+                  if(dir == null) return;
+                  await generatePdfReceipt(cart, dir);
                   await DbManipulation.updateFromSelling(cart);
                   setState(() {
                     cart.clear();

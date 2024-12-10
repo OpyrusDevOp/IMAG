@@ -6,9 +6,10 @@ import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/user.dart';
+import 'package:imag/auth_page.dart';
 import 'package:imag/db_manipulation.dart';
 import 'package:imag/global_references.dart';
-import 'package:imag/home_page.dart';
+import 'package:path/path.dart' as path;
 
 class ConfigAppPage extends StatefulWidget {
   const ConfigAppPage({super.key});
@@ -141,11 +142,13 @@ class ConfigAppPageState extends State<ConfigAppPage> {
       }
 
       dbAssetsPath = databasePath;
-    }
-    try {
+      imageAssetsPath = path.join(dbAssetsPath, "Images");
+
+      try {
       setState(() {
         loadingMessage = "Saving Config";
       });
+      
 
       await Future.delayed(Duration(seconds: 1));
       await saveConfig();
@@ -168,7 +171,7 @@ class ConfigAppPageState extends State<ConfigAppPage> {
       });
       if (context.mounted) {
         await Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+            context, MaterialPageRoute(builder: (context) => AuthPage()));
       }
     } on Exception catch (e) {
       if (kDebugMode) print(e);
@@ -180,6 +183,8 @@ class ConfigAppPageState extends State<ConfigAppPage> {
         isSaving = false;
       });
     }
+    }
+   
   }
 }
 
