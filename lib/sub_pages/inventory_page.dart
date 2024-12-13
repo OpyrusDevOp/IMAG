@@ -39,7 +39,7 @@ class InventoryPageSate extends State<InventoryPage> {
   }
 
   void _deleteProduct(Product product) async {
-    await DbManipulation.deleteProduct(product.id, context);
+    await DbManipulation.deleteProduct(product, context);
     fetchInventory();
   }
 
@@ -78,7 +78,9 @@ class InventoryPageSate extends State<InventoryPage> {
   Future<void> _showProductCreationDialog() => showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return ProductCreationDialog();
+        return ProductCreationDialog(
+          refreshParent: fetchInventory,
+        );
       });
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imag/db_manipulation.dart';
 import 'package:imag/global_references.dart';
 import 'package:imag/home_page.dart';
+import 'package:imag/logger.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -48,6 +49,7 @@ class AuthPageState extends State<AuthPage> {
     }
 
     currentUser = user;
+    Logger.userLogged();
     if (context.mounted) {
       await Navigator.pushReplacement(
           // ignore: use_build_context_synchronously

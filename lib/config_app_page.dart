@@ -145,46 +145,44 @@ class ConfigAppPageState extends State<ConfigAppPage> {
       imageAssetsPath = path.join(dbAssetsPath, "Images");
 
       try {
-      setState(() {
-        loadingMessage = "Saving Config";
-      });
-      
+        setState(() {
+          loadingMessage = "Saving Config";
+        });
 
-      await Future.delayed(Duration(seconds: 1));
-      await saveConfig();
-      await DbManipulation.setupDatabase();
+        await Future.delayed(Duration(seconds: 1));
+        await saveConfig();
+        await DbManipulation.setupDatabase();
 
-      setState(() {
-        loadingMessage = "Save root user ..";
-      });
-      await Future.delayed(Duration(seconds: 2));
-      DbManipulation.insertUser(User(
-          username: usernameInputControl.text,
-          password: passworInputControl.text,
-          role: UserRole.admin));
-      setState(() {
-        loadingMessage = "Setup Finished !";
-      });
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        isSaving = false;
-      });
-      if (context.mounted) {
-        await Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => AuthPage()));
+        setState(() {
+          loadingMessage = "Save root user ..";
+        });
+        await Future.delayed(Duration(seconds: 2));
+        DbManipulation.insertUser(User(
+            username: usernameInputControl.text,
+            password: passworInputControl.text,
+            role: UserRole.admin));
+        setState(() {
+          loadingMessage = "Setup Finished !";
+        });
+        await Future.delayed(Duration(seconds: 1));
+        setState(() {
+          isSaving = false;
+        });
+        if (context.mounted) {
+          await Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => AuthPage()));
+        }
+      } on Exception catch (e) {
+        if (kDebugMode) print(e);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text("Error while saving config !"),
+        ));
+
+        setState(() {
+          isSaving = false;
+        });
       }
-    } on Exception catch (e) {
-      if (kDebugMode) print(e);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text("Error while saving config !"),
-      ));
-
-      setState(() {
-        isSaving = false;
-      });
     }
-    }
-   
   }
 }
 

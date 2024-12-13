@@ -59,7 +59,7 @@ class ProductListState extends State<ProductList> {
                 child: (product.productImage != null
                     ? Image.file(
                         File(getImagePath(product.productImage!)),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fill,
                       )
                     : Icon(
                         Icons.image_not_supported_outlined,

@@ -55,15 +55,19 @@ class CartListState extends State<CartList> {
           padding: const EdgeInsets.all(5),
           child: Card(
             child: ListTile(
-              leading: (product.productImage != null
-                  ? Image.file(
-                      File(getImagePath(product.productImage!)),
-                      fit: BoxFit.cover,
-                    )
-                  : Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 40,
-                    )),
+              leading: SizedBox(
+                width: 60, // Set a fixed width
+                height: 60, // Set a fixed height
+                child: (product.productImage != null
+                    ? Image.file(
+                        File(getImagePath(product.productImage!)),
+                        fit: BoxFit.fill,
+                      )
+                    : Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 40,
+                      )),
+              ),
               title: Text(product.productName),
               subtitle: Text('\$${product.price}'),
               trailing: SizedBox(
@@ -80,6 +84,7 @@ class CartListState extends State<CartList> {
                           setState(() {
                             product.quantity = value.toInt();
                           });
+                          widget.refreshParent();
                         },
                       ),
                     ),

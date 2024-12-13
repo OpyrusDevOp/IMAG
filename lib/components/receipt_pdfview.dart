@@ -1,20 +1,12 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
-
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-Future<void> generatePdfReceipt(List<ProductCarting> cart, String dir) async {
+Future<void> generatePdfReceipt(
+    List<ProductCarting> cart, int totalPrice, String dir) async {
   final pdf = pw.Document();
 
-  int totalPrice = 0;
-
-  for (var item in cart) {
-    totalPrice += item.price * item.quantity;
-  }
-  // Add content to the PDF
   pdf.addPage(
     pw.Page(
       pageFormat: PdfPageFormat.a4,
@@ -109,7 +101,7 @@ Future<void> generatePdfReceipt(List<ProductCarting> cart, String dir) async {
       },
     ),
   );
-  
+
   final output = File(dir);
   await output.writeAsBytes(await pdf.save());
 }

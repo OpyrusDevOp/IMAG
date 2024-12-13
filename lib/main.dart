@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:imag/auth_page.dart';
 import 'package:imag/config_app_page.dart';
 import 'package:imag/global_references.dart';
+import 'package:imag/logger.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'db_manipulation.dart';
@@ -12,7 +13,7 @@ void main() async {
     // Initialize FFI
     sqfliteFfiInit();
   }
-
+  Logger.setupLogger();
   await DbManipulation.setupPreparation();
   var exist = await checkConfig();
 
@@ -25,7 +26,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

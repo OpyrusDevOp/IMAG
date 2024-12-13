@@ -50,6 +50,7 @@ class ProductListingDialogState extends State<ProductListingDialog> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Scaffold(
+              backgroundColor: Colors.transparent,
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 title: TextField(

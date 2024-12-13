@@ -8,7 +8,9 @@ import 'package:imag/global_references.dart';
 import 'package:path/path.dart';
 
 class ProductCreationDialog extends StatefulWidget {
-  const ProductCreationDialog({super.key});
+  final Function refreshParent;
+
+  const ProductCreationDialog({super.key, required this.refreshParent});
 
   @override
   State<StatefulWidget> createState() => ProductCreationDialogState();
@@ -138,9 +140,9 @@ class ProductCreationDialogState extends State<ProductCreationDialog> {
 
               var product = Product(0, productName, productPrice,
                   quantity: productQuantity, productImage: productImageName);
-
               DbManipulation.insertProduct(
                   product, context); // Process the product creation here
+              widget.refreshParent();
               Navigator.of(context).pop();
             }
           },

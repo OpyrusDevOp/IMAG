@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:imag/DataTypes/product.dart';
 import 'package:imag/DataTypes/user.dart';
+import 'package:imag/logger.dart';
 import 'global_references.dart';
 import 'dart:io';
 
@@ -65,6 +66,7 @@ class DbManipulation {
     var values = product.toMap();
     values.remove("id");
     await databaseInstance.insert(tableProduct, values);
+    Logger.productCreation(product);
     if (kDebugMode) {
       print("${product.productName} inserted");
     }
@@ -153,6 +155,7 @@ class DbManipulation {
       whereArgs.add(values.remove('id'));
       await databaseInstance.update(tableProduct, values,
           where: "id = ?", whereArgs: whereArgs);
+      Logger.productModification(product);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Item ${product.productName} saved')),
@@ -175,6 +178,7 @@ class DbManipulation {
       whereArgs.add(item.remove('id'));
       await databaseInstance.update(tableProduct, item,
           where: "id = ?", whereArgs: whereArgs);
+      Logger.productSold(ProductCarting.fromMap(item));
     }
   }
 
@@ -187,10 +191,12 @@ class DbManipulation {
         .update(tableUser, userMap, where: "id = ?", whereArgs: [id]);
   }
 
-  static Future<void> deleteProduct(int id, BuildContext context) async {
+  static Future<void> deleteProduct(
+      Product product, BuildContext context) async {
     try {
-      await databaseInstance
-          .delete(tableProduct, where: "id = ?", whereArgs: <dynamic>[id]);
+      await databaseInstance.delete(tableProduct,
+          where: "id = ?", whereArgs: <dynamic>[product.id]);
+      Logger.productDelete(product);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Item deleted')),
